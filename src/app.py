@@ -1,6 +1,6 @@
+import os
 import streamlit as st
 import pandas as pd
-import os
 import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -44,12 +44,19 @@ if theme_mode == "Dark":
     card_color = "#161B22"
     text_color = "#FAFAFA"
     border_color = "#30363D"
+    muted_text = "#B8C0CC"
+    accent_color = "#4F8CFF"
 else:
     bg_color = "#FFFFFF"
     card_color = "#F7F9FC"
     text_color = "#111111"
     border_color = "#D9E2EC"
+    muted_text = "#5B6470"
+    accent_color = "#2563EB"
 
+# -------------------------
+# RESPONSIVE STYLING
+# -------------------------
 st.markdown(
     f"""
     <style>
@@ -58,64 +65,197 @@ st.markdown(
         color: {text_color};
     }}
 
-    .main-title-box {{
-        background-color: {card_color};
-        padding: 18px;
-        border-radius: 12px;
-        border: 1px solid {border_color};
-        margin-bottom: 16px;
+    .block-container {{
+        padding-top: 1.2rem;
+        padding-bottom: 2rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: 1450px;
     }}
 
-    .section-box {{
-        background-color: {card_color};
-        padding: 14px;
-        border-radius: 12px;
+    .hero-box {{
+        background: linear-gradient(135deg, {card_color} 0%, {bg_color} 100%);
+        padding: 22px;
+        border-radius: 18px;
         border: 1px solid {border_color};
-        margin-top: 10px;
-        margin-bottom: 16px;
+        margin-bottom: 18px;
+    }}
+
+    .hero-title {{
+        margin: 0 0 8px 0;
+        color: {text_color};
+        font-size: 2.25rem;
+        line-height: 1.15;
+        font-weight: 800;
+    }}
+
+    .hero-subtitle {{
+        margin: 0;
+        color: {muted_text};
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 1000px;
+    }}
+
+    .metric-grid {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin: 12px 0 20px 0;
+    }}
+
+    .metric-card {{
+        flex: 1 1 180px;
+        min-width: 180px;
+        background-color: {card_color};
+        border: 1px solid {border_color};
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }}
+
+    .metric-accent {{
+        height: 4px;
+        width: 52px;
+        border-radius: 999px;
+        background-color: {accent_color};
+        margin-bottom: 12px;
+    }}
+
+    .metric-label {{
+        font-size: 0.9rem;
+        color: {muted_text};
+        margin-bottom: 8px;
+    }}
+
+    .metric-value {{
+        font-size: 1.55rem;
+        line-height: 1.2;
+        font-weight: 750;
+        color: {text_color};
+        word-break: break-word;
     }}
 
     div[data-testid="stMetric"] {{
-    background-color: {card_color};
-    border: 1px solid {border_color};
-    padding: 10px;
-    border-radius: 12px;
-    color: {text_color};
-}}
+        background-color: {card_color};
+        border: 1px solid {border_color};
+        padding: 10px;
+        border-radius: 12px;
+        color: {text_color};
+    }}
 
-div[data-testid="stMetricLabel"] {{
-    color: {text_color} !important;
-}}
+    div[data-testid="stMetricLabel"] {{
+        color: {text_color} !important;
+    }}
 
-div[data-testid="stMetricValue"] {{
-    color: {text_color} !important;
-}}
+    div[data-testid="stMetricValue"] {{
+        color: {text_color} !important;
+    }}
+
+    div[data-testid="stDataFrame"] {{
+        border-radius: 12px;
+        overflow: hidden;
+    }}
+
+    .note-box {{
+        background-color: {card_color};
+        border: 1px solid {border_color};
+        border-left: 5px solid {accent_color};
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 8px 0 18px 0;
+        color: {muted_text};
+        line-height: 1.55;
+    }}
+
+    @media (max-width: 1024px) {{
+        .hero-title {{
+            font-size: 2rem;
+        }}
+
+        .metric-card {{
+            flex: 1 1 45%;
+            min-width: 160px;
+        }}
+    }}
+
+    @media (max-width: 640px) {{
+        .block-container {{
+            padding-top: 1rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }}
+
+        .hero-box {{
+            padding: 18px;
+            border-radius: 16px;
+        }}
+
+        .hero-title {{
+            font-size: 1.7rem;
+        }}
+
+        .hero-subtitle {{
+            font-size: 0.95rem;
+        }}
+
+        .metric-grid {{
+            gap: 10px;
+        }}
+
+        .metric-card {{
+            flex: 1 1 100%;
+            min-width: 100%;
+            padding: 14px;
+        }}
+
+        .metric-value {{
+            font-size: 1.35rem;
+        }}
+    }}
     </style>
     """,
     unsafe_allow_html=True
 )
 
+# -------------------------
+# HERO SECTION
+# -------------------------
 st.markdown(
     f"""
-    <div class="main-title-box">
-        <h1 style="margin-bottom:0; color:{text_color};">🎮 Game Movement Intelligence Dashboard</h1>
-        <p style="margin-top:8px; color:{text_color};">
-            This dashboard helps Level Designers explore how players move through maps,
-            where fights happen, where deaths cluster, and which zones may be overused or ignored.
-        </p>
+    <div class="hero-box">
+        <div class="hero-title">🎮 Game Movement Intelligence Dashboard</div>
+        <div class="hero-subtitle">
+            A browser-based telemetry exploration tool for Level Designers to understand player movement,
+            combat zones, death clusters, loot activity, bot-vs-human patterns, and match progression over time.
+        </div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-max_files = st.sidebar.slider("Number of files to load", 1, min(50, len(nakama_files)), min(10, len(nakama_files)))
+st.markdown(
+    """
+    <div class="note-box">
+        Use the controls in the sidebar to filter players, maps, replay time, and event visibility.
+        This layout is responsive and keeps all major sections visible by default.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# -------------------------
+# FILE LOADING
+# -------------------------
+max_files = st.sidebar.slider(
+    "Number of files to load",
+    1,
+    min(50, len(nakama_files)),
+    min(10, len(nakama_files))
+)
 selected_files = nakama_files[:max_files]
 
-# -------------------------
-# LOAD FILES SAFELY
-# -------------------------
 df_list = []
-
 for f in selected_files:
     file_path = os.path.join(data_path, f)
     try:
@@ -143,8 +283,6 @@ def decode_event(x):
     except Exception:
         return str(x)
 
-df["event"] = df["event"].apply(decode_event)
-
 def detect_player_type(user_id):
     try:
         int(user_id)
@@ -152,6 +290,7 @@ def detect_player_type(user_id):
     except Exception:
         return "Human"
 
+df["event"] = df["event"].apply(decode_event)
 df["player_type"] = df["user_id"].apply(detect_player_type)
 df["ts"] = pd.to_numeric(df["ts"], errors="coerce")
 df = df.dropna()
@@ -259,9 +398,6 @@ event_df = df[df["event"].isin([
     "Kill", "Killed", "BotKill", "BotKilled", "Loot", "KilledByStorm"
 ])].copy()
 
-human_movement_df = movement_df[movement_df["player_type"] == "Human"].copy()
-bot_movement_df = movement_df[movement_df["player_type"] == "Bot"].copy()
-
 # -------------------------
 # REPLAY / TIMELINE
 # -------------------------
@@ -291,7 +427,7 @@ human_replay_df = movement_replay_df[movement_replay_df["player_type"] == "Human
 bot_replay_df = movement_replay_df[movement_replay_df["player_type"] == "Bot"].copy()
 
 # -------------------------
-# LOAD IMAGE
+# LOAD MAP IMAGE
 # -------------------------
 try:
     img = Image.open(image_path)
@@ -300,7 +436,7 @@ except Exception as e:
     st.stop()
 
 # -------------------------
-# TOP METRICS
+# METRICS
 # -------------------------
 total_movement = len(movement_replay_df)
 total_events = len(event_replay_df)
@@ -311,49 +447,90 @@ total_storm = len(event_replay_df[event_replay_df["event"] == "KilledByStorm"])
 human_points = len(human_replay_df)
 bot_points = len(bot_replay_df)
 
-metric_col1, metric_col2, metric_col3, metric_col4, metric_col5 = st.columns(5)
-metric_col1.metric("Map", selected_map)
-metric_col2.metric("Replay Time", selected_ts)
-metric_col3.metric("Movement Points", total_movement)
-metric_col4.metric("Events", total_events)
-metric_col5.metric("Players Loaded", len(all_player_ids))
-
-st.markdown("---")
+metrics_html = f"""
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Map</div>
+        <div class="metric-value">{selected_map}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Replay Time</div>
+        <div class="metric-value">{selected_ts}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Movement Points</div>
+        <div class="metric-value">{total_movement}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Events</div>
+        <div class="metric-value">{total_events}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Players Loaded</div>
+        <div class="metric-value">{len(all_player_ids)}</div>
+    </div>
+</div>
+"""
+st.markdown(metrics_html, unsafe_allow_html=True)
 
 # -------------------------
-# MOVEMENT AND HEATMAP
+# MOVEMENT + HEATMAP
 # -------------------------
-left_col, right_col = st.columns(2)
+st.markdown("## 🗺️ Core Visualizations")
 
-with left_col:
+col1, col2 = st.columns(2)
+
+with col1:
     st.subheader("Movement Path")
 
-    fig1, ax1 = plt.subplots(figsize=(7, 7))
+    fig1, ax1 = plt.subplots(figsize=(8, 8))
     ax1.imshow(img)
 
     if selected_player == "All":
         if len(human_replay_df) > 0:
-            ax1.scatter(human_replay_df["px"], human_replay_df["py"], s=4, marker="o", label="Humans")
+            ax1.scatter(
+                human_replay_df["px"],
+                human_replay_df["py"],
+                s=4,
+                marker="o",
+                label="Humans"
+            )
         if len(bot_replay_df) > 0:
-            ax1.scatter(bot_replay_df["px"], bot_replay_df["py"], s=8, marker="x", label="Bots")
+            ax1.scatter(
+                bot_replay_df["px"],
+                bot_replay_df["py"],
+                s=8,
+                marker="x",
+                label="Bots"
+            )
         if len(human_replay_df) > 0 or len(bot_replay_df) > 0:
             ax1.legend()
     else:
         if len(movement_replay_df) > 0:
             ordered_movement = movement_replay_df.sort_values("ts")
-            ax1.plot(ordered_movement["px"], ordered_movement["py"], linewidth=1, label=str(selected_player))
+            ax1.plot(
+                ordered_movement["px"],
+                ordered_movement["py"],
+                linewidth=1,
+                label=str(selected_player)
+            )
             ax1.legend()
         else:
             st.info("No movement points available for this replay window.")
 
     ax1.set_title("Player Movement Replay")
     ax1.axis("off")
-    st.pyplot(fig1)
+    st.pyplot(fig1, use_container_width=True)
 
-with right_col:
+with col2:
     st.subheader("Traffic Heatmap")
 
-    fig2, ax2 = plt.subplots(figsize=(7, 7))
+    fig2, ax2 = plt.subplots(figsize=(8, 8))
     ax2.imshow(img)
 
     if len(movement_replay_df) > 0:
@@ -369,14 +546,13 @@ with right_col:
 
     ax2.set_title("High-Traffic Zones")
     ax2.axis("off")
-    st.pyplot(fig2)
-
-st.markdown("---")
+    st.pyplot(fig2, use_container_width=True)
 
 # -------------------------
 # EVENT MAP
 # -------------------------
-st.subheader("Event Map")
+st.markdown("---")
+st.markdown("## 🎯 Event Map")
 
 fig3, ax3 = plt.subplots(figsize=(8, 8))
 ax3.imshow(img)
@@ -411,17 +587,17 @@ ax3.set_title("Event Replay")
 ax3.axis("off")
 if legend_needed:
     ax3.legend()
-st.pyplot(fig3)
+
+st.pyplot(fig3, use_container_width=True)
 
 if len(event_replay_df) == 0:
     st.info("No event markers are available in the current replay window.")
 
-st.markdown("---")
-
 # -------------------------
 # PRODUCT INSIGHTS
 # -------------------------
-st.subheader("Product Insights")
+st.markdown("---")
+st.markdown("## 🧠 Product Insights")
 
 bot_share = (bot_points / total_movement) if total_movement > 0 else 0
 
@@ -462,12 +638,11 @@ else:
 for line in insight_lines:
     st.write(line)
 
-st.markdown("---")
-
 # -------------------------
 # ADVANCED ZONE ANALYSIS
 # -------------------------
-st.subheader("Advanced Zone Analysis")
+st.markdown("---")
+st.markdown("## 📊 Advanced Zone Analysis")
 
 zone_order = ["North-West", "North-East", "South-West", "South-East"]
 zone_summary = pd.DataFrame({"zone": zone_order})
@@ -490,24 +665,42 @@ highest_risk_zone = zone_summary.sort_values(["deaths", "event_points"], ascendi
 safest_zone = zone_summary.sort_values(["deaths", "movement_points"], ascending=True).iloc[0]["zone"]
 most_loot_active_zone = zone_summary.sort_values(["loot", "movement_points"], ascending=False).iloc[0]["zone"]
 
-zone_col1, zone_col2, zone_col3, zone_col4 = st.columns(4)
-zone_col1.metric("Engagement Hotspot", hottest_engagement_zone)
-zone_col2.metric("High-Risk Zone", highest_risk_zone)
-zone_col3.metric("Safe Zone", safest_zone)
-zone_col4.metric("Loot Activity Zone", most_loot_active_zone)
-
-st.dataframe(zone_summary)
-
-st.markdown("---")
+zone_metrics_html = f"""
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Engagement Hotspot</div>
+        <div class="metric-value">{hottest_engagement_zone}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">High-Risk Zone</div>
+        <div class="metric-value">{highest_risk_zone}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Safe Zone</div>
+        <div class="metric-value">{safest_zone}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Loot Activity Zone</div>
+        <div class="metric-value">{most_loot_active_zone}</div>
+    </div>
+</div>
+"""
+st.markdown(zone_metrics_html, unsafe_allow_html=True)
+st.dataframe(zone_summary, use_container_width=True)
 
 # -------------------------
 # BEHAVIOR + JOURNEY
 # -------------------------
-analysis_col1, analysis_col2 = st.columns(2)
+st.markdown("---")
+st.markdown("## 🧭 Behavior and Journey Analysis")
 
-with analysis_col1:
-    st.subheader("Behavior Pattern Detection")
+tab_a, tab_b = st.tabs(["Behavior Pattern Detection", "Player Journey Analysis"])
 
+with tab_a:
     loot_ratio = (total_loot / total_movement) if total_movement > 0 else 0
     combat_ratio = ((total_kills + total_deaths) / total_movement) if total_movement > 0 else 0
 
@@ -524,9 +717,7 @@ with analysis_col1:
     st.write(f"- Human movement points: {human_points}")
     st.write(f"- Bot movement points: {bot_points}")
 
-with analysis_col2:
-    st.subheader("Player Journey Analysis")
-
+with tab_b:
     journey_text = []
 
     if len(movement_replay_df) > 0:
@@ -559,20 +750,25 @@ with analysis_col2:
     for line in journey_text:
         st.write(line)
 
-st.markdown("---")
-
 # -------------------------
 # SUMMARY TABLES
 # -------------------------
-summary_left, summary_right = st.columns(2)
+st.markdown("---")
+st.markdown("## 📋 Summary Tables")
 
-with summary_left:
-    st.subheader("Player Type Counts")
-    st.dataframe(df["player_type"].value_counts().reset_index(name="count"))
+summary_tab1, summary_tab2 = st.tabs(["Player Type Counts", "Event Counts in Replay Window"])
 
-with summary_right:
-    st.subheader("Event Counts in Replay Window")
+with summary_tab1:
+    st.dataframe(
+        df["player_type"].value_counts().reset_index(name="count"),
+        use_container_width=True
+    )
+
+with summary_tab2:
     if len(event_replay_df) > 0:
-        st.dataframe(event_replay_df["event"].value_counts().reset_index(name="count"))
+        st.dataframe(
+            event_replay_df["event"].value_counts().reset_index(name="count"),
+            use_container_width=True
+        )
     else:
         st.write("No events yet in the selected replay window.")
