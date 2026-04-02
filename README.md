@@ -4,15 +4,32 @@ A data-driven analytics dashboard built using Python and Streamlit to analyze pl
 
 ---
 
+## 🌐 Live Demo
+
+👉 https://kpf8ophsvvgazhhnnlepcm.streamlit.app/
+
+---
+
 ## 📌 Problem Statement
 
 Game designers often lack visibility into how players actually move through maps, where combat happens, and which zones are overused or ignored.
 
 Without this insight, it becomes difficult to:
-- balance maps
-- improve player experience
-- optimize engagement zones
-- reduce frustration (e.g., unfair death zones)
+
+- balance maps  
+- improve player experience  
+- optimize engagement zones  
+- reduce frustration (e.g., unfair death zones)  
+
+---
+
+## 👤 Who Is This For?
+
+This tool is designed for **Level Designers** and **Game Product Teams** to:
+
+- understand player behavior visually  
+- identify map design issues  
+- make data-driven design decisions  
 
 ---
 
@@ -50,6 +67,18 @@ This dashboard transforms raw game telemetry into actionable insights by:
 
 ---
 
+## 🧠 Product Thinking
+
+This is not just a visualization tool.
+
+It is designed to help Level Designers:
+- identify choke points and unfair zones  
+- detect underutilized map areas  
+- understand player behavior patterns  
+- make actionable decisions to improve gameplay  
+
+---
+
 ## 🛠️ Tech Stack
 
 - Python  
@@ -68,6 +97,3 @@ git clone https://github.com/Dubey1209/game-movement-dashboard-Lila-.git
 cd game-movement-dashboard-Lila-
 pip install -r requirements.txt
 python -m streamlit run src/app.py
-
-
-The LIVE URL link (streamlit) : https://kpf8ophsvvgazhhnnlepcm.streamlit.app/
