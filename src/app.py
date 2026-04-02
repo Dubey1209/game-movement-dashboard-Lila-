@@ -46,6 +46,7 @@ if theme_mode == "Dark":
     border_color = "#30363D"
     muted_text = "#B8C0CC"
     accent_color = "#4F8CFF"
+    hover_shadow = "0 10px 24px rgba(0, 0, 0, 0.28)"
 else:
     bg_color = "#FFFFFF"
     card_color = "#F7F9FC"
@@ -53,9 +54,10 @@ else:
     border_color = "#D9E2EC"
     muted_text = "#5B6470"
     accent_color = "#2563EB"
+    hover_shadow = "0 10px 24px rgba(37, 99, 235, 0.12)"
 
 # -------------------------
-# RESPONSIVE STYLING
+# RESPONSIVE + ANIMATION STYLING
 # -------------------------
 st.markdown(
     f"""
@@ -71,6 +73,18 @@ st.markdown(
         padding-left: 1rem;
         padding-right: 1rem;
         max-width: 1450px;
+        animation: pageFadeIn 0.6s ease-in-out;
+    }}
+
+    @keyframes pageFadeIn {{
+        from {{
+            opacity: 0;
+            transform: translateY(8px);
+        }}
+        to {{
+            opacity: 1;
+            transform: translateY(0);
+        }}
     }}
 
     .hero-box {{
@@ -79,6 +93,13 @@ st.markdown(
         border-radius: 18px;
         border: 1px solid {border_color};
         margin-bottom: 18px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }}
+
+    .hero-box:hover {{
+        transform: translateY(-3px);
+        box-shadow: {hover_shadow};
+        border-color: {accent_color};
     }}
 
     .hero-title {{
@@ -112,6 +133,25 @@ st.markdown(
         border-radius: 16px;
         padding: 16px;
         box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        animation: cardPopIn 0.45s ease;
+    }}
+
+    .metric-card:hover {{
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: {hover_shadow};
+        border-color: {accent_color};
+    }}
+
+    @keyframes cardPopIn {{
+        from {{
+            opacity: 0;
+            transform: translateY(10px);
+        }}
+        to {{
+            opacity: 1;
+            transform: translateY(0);
+        }}
     }}
 
     .metric-accent {{
@@ -120,6 +160,11 @@ st.markdown(
         border-radius: 999px;
         background-color: {accent_color};
         margin-bottom: 12px;
+        transition: width 0.25s ease;
+    }}
+
+    .metric-card:hover .metric-accent {{
+        width: 70px;
     }}
 
     .metric-label {{
@@ -142,6 +187,13 @@ st.markdown(
         padding: 10px;
         border-radius: 12px;
         color: {text_color};
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }}
+
+    div[data-testid="stMetric"]:hover {{
+        transform: translateY(-4px);
+        box-shadow: {hover_shadow};
+        border-color: {accent_color};
     }}
 
     div[data-testid="stMetricLabel"] {{
@@ -155,6 +207,12 @@ st.markdown(
     div[data-testid="stDataFrame"] {{
         border-radius: 12px;
         overflow: hidden;
+        transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }}
+
+    div[data-testid="stDataFrame"]:hover {{
+        box-shadow: {hover_shadow};
+        transform: translateY(-2px);
     }}
 
     .note-box {{
@@ -166,6 +224,17 @@ st.markdown(
         margin: 8px 0 18px 0;
         color: {muted_text};
         line-height: 1.55;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }}
+
+    .note-box:hover {{
+        transform: translateY(-3px);
+        box-shadow: {hover_shadow};
+        border-color: {accent_color};
+    }}
+
+    h2, h3 {{
+        scroll-margin-top: 80px;
     }}
 
     @media (max-width: 1024px) {{
@@ -238,7 +307,7 @@ st.markdown(
     """
     <div class="note-box">
         Use the controls in the sidebar to filter by player, map, date, match, replay time, and event visibility.
-        This layout is responsive and keeps all major sections visible by default.
+        This layout is responsive and now includes subtle hover effects and animation for a more polished experience.
     </div>
     """,
     unsafe_allow_html=True
@@ -814,4 +883,4 @@ with summary_tab2:
             use_container_width=True
         )
     else:
-        st.write("No events yet in the selected replay window.")
+        st.write("No events yet in the current replay window.")
