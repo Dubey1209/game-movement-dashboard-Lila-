@@ -237,7 +237,7 @@ st.markdown(
 st.markdown(
     """
     <div class="note-box">
-        Use the controls in the sidebar to filter players, maps, replay time, and event visibility.
+        Use the controls in the sidebar to filter by player, map, date, match, replay time, and event visibility.
         This layout is responsive and keeps all major sections visible by default.
     </div>
     """,
@@ -300,9 +300,15 @@ if df.empty:
     st.stop()
 
 # -------------------------
+# DATE PREPARATION
+# -------------------------
+df["datetime_utc"] = pd.to_datetime(df["ts"], unit="s", utc=True, errors="coerce")
+df["event_date"] = df["datetime_utc"].dt.strftime("%Y-%m-%d")
+
+# -------------------------
 # FILTERS
 # -------------------------
-all_player_ids = df["user_id"].dropna().unique().tolist()
+all_player_ids = sorted(df["user_id"].dropna().unique().tolist())
 selected_player = st.sidebar.selectbox("Select Player", ["All"] + all_player_ids)
 
 if selected_player != "All":
@@ -312,13 +318,38 @@ if df.empty:
     st.warning("No data available for the selected player.")
     st.stop()
 
-map_ids = df["map_id"].dropna().unique().tolist()
+map_ids = sorted(df["map_id"].dropna().unique().tolist())
 selected_map = st.sidebar.selectbox("Select Map", map_ids)
 df = df[df["map_id"] == selected_map].copy()
 
 if df.empty:
     st.warning("No data available for the selected map.")
     st.stop()
+
+date_options = sorted([d for d in df["event_date"].dropna().unique().tolist() if d != "NaT"])
+selected_date = st.sidebar.selectbox("Select Date", ["All"] + date_options)
+
+if selected_date != "All":
+    df = df[df["event_date"] == selected_date].copy()
+
+if df.empty:
+    st.warning("No data available for the selected date.")
+    st.stop()
+
+if "match_id" in df.columns:
+    match_options = sorted(df["match_id"].dropna().astype(str).unique().tolist())
+    selected_match = st.sidebar.selectbox("Select Match", ["All"] + match_options)
+    if selected_match != "All":
+        df = df[df["match_id"].astype(str) == selected_match].copy()
+else:
+    selected_match = "All"
+    st.sidebar.info("match_id column not found in the dataset.")
+
+if df.empty:
+    st.warning("No data available for the selected match.")
+    st.stop()
+
+filtered_player_ids = sorted(df["user_id"].dropna().unique().tolist())
 
 # -------------------------
 # MAP CONFIG
@@ -447,12 +478,24 @@ total_storm = len(event_replay_df[event_replay_df["event"] == "KilledByStorm"])
 human_points = len(human_replay_df)
 bot_points = len(bot_replay_df)
 
+display_match_value = selected_match if selected_match != "All" else str(df["match_id"].nunique()) + " matches"
+
 metrics_html = f"""
 <div class="metric-grid">
     <div class="metric-card">
         <div class="metric-accent"></div>
         <div class="metric-label">Map</div>
         <div class="metric-value">{selected_map}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Date</div>
+        <div class="metric-value">{selected_date if selected_date != "All" else "All Dates"}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-accent"></div>
+        <div class="metric-label">Match</div>
+        <div class="metric-value">{display_match_value}</div>
     </div>
     <div class="metric-card">
         <div class="metric-accent"></div>
@@ -472,7 +515,7 @@ metrics_html = f"""
     <div class="metric-card">
         <div class="metric-accent"></div>
         <div class="metric-label">Players Loaded</div>
-        <div class="metric-value">{len(all_player_ids)}</div>
+        <div class="metric-value">{len(filtered_player_ids)}</div>
     </div>
 </div>
 """
